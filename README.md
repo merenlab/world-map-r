@@ -2,9 +2,15 @@ A simple script to display stuff on a world map with R and ggplot
 
 # Usage
 
-This is an embarrassingly simple and largely generalized version of an R script that we often use to visualize the relative abundance and distribution of our marine metagenome-assembled genomes.
+This is an embarrassingly simple and largely generalized version of an R script that we often use in our lab to visualize the relative abundance and distribution of our marine metagenome-assembled genomes on the map.
 
-Given that it could be useful to others, we decided to put it in a repository.
+Given that it could be useful to others, we decided to put it in a repository. You can generate a copy of it, and run it on the mock data this way:
+
+``` bash
+git clone https://github.com/merenlab/world-map-r.git
+cd world-map-r
+./generate-PDFs.R
+```
 
 The input file format is very simple, and you can find an example file called `data.txt` in the repository. It goes like this:
 
