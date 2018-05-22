@@ -40,8 +40,16 @@ Working on MAG_004 ...
 Working on MAG_005 ...
 ```
 
-The script will resize the area of interest depending on the sample locations, which may require to adjust the PDF output width and height by editing variables listed in the header section of the script. Just open in a text editor, and save your changes before re-running it.
+For instance, one of the output files in my work directory, `MAG_001.pdf`, looks like this:
+
+![https://i.imgur.com/plA8MoP.png](https://i.imgur.com/plA8MoP.png)
+
+The script will resize the area of interest depending on the sample locations. For instance, if I remove some random metagenomes from the example file and re-run it, I get this figure instead:
+
+![https://i.imgur.com/W3IcrSF.png](https://i.imgur.com/W3IcrSF.png)
+
+Depending on the data you are visualizing, you may need to adjust the PDF output width and height, colors, or the text size through the variables listed in the header section of the script. Just open in a text editor, and save your changes before re-running it.
 
 # Need more from this?
 
-Feel free to ask for more!
+Of course you do :) Feel free to send a message!
