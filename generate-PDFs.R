@@ -1,17 +1,14 @@
 #!/usr/bin/env Rscript
 
 suppressMessages(library(ggplot2))
-suppressMessages(library(reshape2))
 suppressMessages(library(maps))
-suppressMessages(library(plyr))
-suppressMessages(library(gridExtra))
 
 #############################################################################
 # Feel free to edit the stuff below
 #############################################################################
 
 FONT_SIZE <- 2 # set it to 0 to see no labels
-FONT_COLOR="BLACK"
+FONT_COLOR="black"
 
 POINT_COLOR="RED"
 
