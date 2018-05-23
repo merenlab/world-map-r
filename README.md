@@ -54,6 +54,17 @@ The script will resize the area of interest depending on the sample locations. F
 
 ![https://i.imgur.com/W3IcrSF.png](https://i.imgur.com/W3IcrSF.png)
 
+---
+
+The repository also contains another example file, called 'data-for-TARA.txt'. This file is the combination of TARA Ocean stations and various measurements along with their latitude and longitude, and the coverage values for MAGs we recovered from these metagenomes. If you would like to see how we generated these MAGs, and to access their FASTA files, you can visit [this URL](http://merenlab.org/data/2017_Delmont_et_al_HBDs/). You can also generate MAPs for MAGs in this file by changing two variables in the script:
+
+``` bash
+DATA_FILE="./data-for-TARA.txt"
+MAG_PREFIX_IN_DATA_FILE="TARA_"
+```
+
+----
+
 Depending on the data you are visualizing, you may need to adjust the PDF output width and height, colors, or the text size through the variables listed in the header section of the script. Just open in a text editor, and save your changes before re-running it.
 
 # Need more from this?
