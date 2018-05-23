@@ -7,6 +7,9 @@ suppressMessages(library(maps))
 # Feel free to edit the stuff below
 #############################################################################
 
+DATA_FILE="./data.txt"
+MAG_PREFIX_IN_DATA_FILE="MAG_"
+
 FONT_SIZE <- 2 # set it to 0 to see no labels
 FONT_COLOR="black"
 
@@ -75,13 +78,13 @@ clean_map <- function(plot_object){
 }
 
 # get the data
-df <- read.table(file = 'data.txt',
+df <- read.table(file = DATA_FILE,
                  header = TRUE,
                  sep = "\t",
                  quote = "")
 
 # learn about columns that show distribution of MAGs
-MAGs <- names(df)[grepl("MAG_", names(df))]
+MAGs <- names(df)[grepl(MAG_PREFIX_IN_DATA_FILE, names(df))]
 
 # go through each MAG, and create a single image.
 for (MAG in MAGs){
