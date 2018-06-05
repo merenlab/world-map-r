@@ -9,7 +9,7 @@ suppressMessages(library(maps))
 
 DATA_FILE="./data.txt"
 CIRCLE_SIZE_PREFIX_IN_DATA_FILE="MAG_"
-CIRCLE_COLOR_PREFIX_IN_DATA_FILE=""
+CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE=""
 
 FONT_SIZE <- 2 # set it to 0 to see no labels
 FONT_COLOR="black"
@@ -123,26 +123,31 @@ clean_map <- function(plot_object){
 df <- read.table(file = DATA_FILE,
                  header = TRUE,
                  sep = "\t",
-                 quote = "")
+                 quote = "",
+                 comment.char = '!')
 
 # learn about columns that show distribution of MAGs
 MAGs <- names(df)[startsWith(names(df), CIRCLE_SIZE_PREFIX_IN_DATA_FILE)]
 
 # go through each MAG, and create a single image.
 for (MAG in MAGs){
-  cat(sprintf("Working on %s ...\n", MAG))
+  cat(sprintf("Working on %s", MAG))
 
   # sort out the colors
-  if (CIRCLE_COLOR_PREFIX_IN_DATA_FILE == "") {
+  if (CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE == "") {
     # no color columns. just use static color
     color_column = NULL
+    cat(sprintf(" ... dynamic color [-]", MAG))
   } else {
     # search for corresponding color column for MAG
     suffix <- gsub(CIRCLE_SIZE_PREFIX_IN_DATA_FILE, "", MAG)
-    color_column <- paste(CIRCLE_COLOR_PREFIX_IN_DATA_FILE, suffix, sep="")
+    color_column <- paste(CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE, suffix, sep="")
+
     if (!(color_column %in% colnames(df))) {
-      cat(sprintf("Could not find the column %s. Reverting to static color. \n", color_column))
       color_column <- NULL
+      cat(sprintf(" ... dynamic color [-]"))
+    } else {
+      cat(sprintf(" ... dynamic color [+]"))
     }
   }
 
@@ -156,8 +161,10 @@ for (MAG in MAGs){
   world_map <- clean_map(world_map)
 
   # save it
+  cat(sprintf(" ... generating the figure"))
   pdf(paste(MAG, '.pdf', sep=''), width=PDF_WIDTH, height=PDF_HEIGHT)
   print(world_map)
   dev.off()
+  cat(sprintf(" ... OK\n"))
 }
 
