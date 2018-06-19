@@ -109,6 +109,50 @@ CIRCLE_COLOR_LOW="red"
 CIRCLE_COLOR_HIGH="yellow"
 ```
 
+# Generating high-resolution maps
+
+If you want to zoom into a very specific area, you will realize that the best you can do will not exceed the quality of this from the default World map included in the library `map`:
+
+![https://i.imgur.com/r0GAQeF.png](https://i.imgur.com/r0GAQeF.png)
+
+Which I created using this `data.txt` to make an example:
+
+|samples|Lat|Lon|COLOR_007|MAG_X|
+|:--|:--:|:--:|:--:|:--:|
+|SAMPLE_X|41.2213|29.1290|27.1|0.00000|
+
+This is what Coto asked recently, and Jarrod responded so eloquently [in this issue](https://github.com/merenlab/world-map-r/issues/1). I used Jarod's solution to [update](https://github.com/merenlab/world-map-r/commit/b8fc130b41f265bc7b37cf4f1206a16d130bb4df) the code slightly. As a result, now you can define a shape file in the code to generate maps with much higher resolution when needed. This will require you to first install additional things, including the Geospatial Data Abstraction Library, or [GDAL](http://www.gdal.org/), and a bunch of additional R libraries. This is how I did this on my MacBook:
+
+``` bash
+# first install gdal package through brew
+brew install gdal
+
+# then open an R terminal
+R
+
+# in the terminal run these commands:
+install.packages('rgdal', type = "source", configure.args=c('--with-proj-include=/usr/local/include','--with-proj-lib=/usr/local/lib'))
+install.packages('mapproj')
+install.packages('raster')
+```
+
+If everything went OK so far, you are golden. After this the only thing you need ot do is to download the appropriate shape file for your map. The example above is from Istanbul, so I went to [the download GADM data page](https://gadm.org/download_country_v3.html), found the relevant country from the combo box, which is Turkey in my case, and download the 'shapefile' linked in the results. Unpacking the zip file revealed a new directory, `gadm36_TUR_shp`, in which I found a file called `gadm36_TUR_0.shp`.
+
+The next thing I did was to update the code with the path for this file in the settings section:
+
+``` bash
+SHAPEFILE="~/Downloads/gadm36_TUR_shp/gadm36_TUR_0.shp"
+```
+
+When I run the program again, this is what I get:
+
+![https://i.imgur.com/dziOgOU.png](https://i.imgur.com/dziOgOU.png)
+
+By playing with `MARGIN_*` and `*_POINT_SIZE` variables, you can zoom in further, or adjust your display:
+
+![https://i.imgur.com/BGrtYBK.png](https://i.imgur.com/BGrtYBK.png)
+
+
 # Need more from this?
 
 Of course you do :) Feel free to send a message!
