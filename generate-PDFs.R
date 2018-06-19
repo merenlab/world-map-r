@@ -11,6 +11,13 @@ DATA_FILE="./data.txt"
 CIRCLE_SIZE_PREFIX_IN_DATA_FILE="MAG_"
 CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE=""
 
+# shape file. if you have a shapefile to work with, describe it here. if you
+# fill in this variable, the code will use your shape file instead of the
+# low resolution default world map (please see the README if you are not sure
+# what is going on and would like to learn more):
+SHAPEFILE=""
+
+# Interface toys down below
 FONT_SIZE <- 2 # set it to 0 to see no labels
 FONT_COLOR="black"
 
