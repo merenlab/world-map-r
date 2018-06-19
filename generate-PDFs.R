@@ -86,26 +86,24 @@ gen_blank_world_map_with_shape_file <- function(df) {
 
 add_mag_abundances <- function(plot_object, df, mag, mag_color=NULL, color_low=NULL, color_high=NULL, alpha=0.2, labels = TRUE){
   if (!is.null(mag_color)) {
-    plot_object <- plot_object + geom_jitter(data = df,
-                                             position=position_jitter(width=0, height=0),
-                                             aes_string(x="Lon", y="Lat",
-                                                        group=mag,
-                                                        size=mag,
-                                                        color=mag_color),
-                                             stroke = 0,
-                                             alpha=ALPHA)
+    plot_object <- plot_object + geom_point(data = df,
+                                            aes_string(x="Lon", y="Lat",
+                                                       group=mag,
+                                                       size=mag,
+                                                       color=mag_color),
+                                            stroke = 0,
+                                            alpha=ALPHA)
 
     plot_object <- plot_object + scale_colour_gradient(low = color_low, high = color_high)
 
   } else {
-    plot_object <- plot_object + geom_jitter(data = df,
-                                             position=position_jitter(width=0, height=0),
-                                             aes_string(x="Lon", y="Lat",
-                                                        group=mag,
-                                                        size=mag),
-                                             color=CIRCLE_COLOR_LOW,
-                                             stroke = 0,
-                                             alpha=ALPHA)
+    plot_object <- plot_object + geom_point(data = df,
+                                            aes_string(x="Lon", y="Lat",
+                                                       group=mag,
+                                                       size=mag),
+                                            color=CIRCLE_COLOR_LOW,
+                                            stroke = 0,
+                                            alpha=ALPHA)
   }
 
   if (CIRCLE_BORDER_WIDTH == 0) {
@@ -114,14 +112,14 @@ add_mag_abundances <- function(plot_object, df, mag, mag_color=NULL, color_low=N
   } else {
     alpha_for_border = ALPHA
   }
-  plot_object <- plot_object + geom_jitter(data = df,
-                                           shape = 21,
-                                           colour = "black",
-                                           aes_string(x="Lon", y="Lat",
-                                                      group=mag,
-                                                      size=mag),
-                                           stroke = CIRCLE_BORDER_WIDTH,
-                                           alpha=alpha_for_border)
+  plot_object <- plot_object + geom_point(data = df,
+                                          shape = 21,
+                                          colour = "black",
+                                          aes_string(x="Lon", y="Lat",
+                                                     group=mag,
+                                                     size=mag),
+                                          stroke = CIRCLE_BORDER_WIDTH,
+                                          alpha=alpha_for_border)
 
   plot_object <- plot_object + geom_text(data = df,
                                          aes(x=Lon, y=Lat,
