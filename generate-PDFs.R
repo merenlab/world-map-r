@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
 
 suppressMessages(library(ggplot2))
-suppressMessages(library(maps))
 
 #############################################################################
 # Feel free to edit the stuff below
@@ -47,7 +46,9 @@ PDF_HEIGHT <- 5.5
 
 #############################################################################
 
-gen_blank_world_map <- function(df) {
+gen_blank_world_map_simple <- function(df) {
+  suppressMessages(library(maps))
+
   world_map <- map_data("world")
 
   min_lat <- min(df$Lat) + MARGIN_MIN_LAT
@@ -59,6 +60,26 @@ gen_blank_world_map <- function(df) {
   p <- p + geom_polygon(fill = '#777777')
   p <- p + coord_cartesian(xlim = c(min_lon, max_lon),
                            ylim = c(min_lat, max_lat))
+
+  return(p)
+}
+
+gen_blank_world_map_with_shape_file <- function(df) {
+  suppressMessages(library(rgdal))
+  suppressMessages(library(raster))
+
+  world_map <- fortify(shapefile(SHAPEFILE))
+
+  min_lat <- min(df$Lat) + MARGIN_MIN_LAT
+  max_lat <- max(df$Lat) + MARGIN_MAX_LAT
+  min_lon <- min(df$Lon) + MARGIN_MIN_LON
+  max_lon <- max(df$Lon) + MARGIN_MAX_LON
+
+  p <- ggplot()
+  p <- ggplot(data=world_map,aes(x=long, y=lat, group=group))
+  p <- p + geom_polygon(fill = '#777777', size = 10)
+  p <- p + coord_map(projection = "mercator", xlim = c(min_lon, max_lon),
+  ylim = c(min_lat, max_lat))
 
   return(p)
 }
@@ -159,7 +180,10 @@ for (MAG in MAGs){
   }
 
   # get a blank world map
-  world_map <- gen_blank_world_map(df)
+  if (is.na(SHAPEFILE) || SHAPEFILE == '')
+    world_map <- gen_blank_world_map_simple(df)
+  else
+    world_map <- gen_blank_world_map_with_shape_file(df)
 
   # add mag abundances on the canvas
   world_map <- add_mag_abundances(world_map, df, MAG, mag_color=color_column, color_low=CIRCLE_COLOR_LOW, color_high=CIRCLE_COLOR_HIGH, alpha=ALPHA)
