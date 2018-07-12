@@ -60,7 +60,13 @@ The script will resize the area of interest depending on the sample locations. F
 The repository also contains another example file, called 'data-for-TARA.txt'. This file is the combination of TARA Ocean stations and various measurements along with their latitude and longitude, and the coverage values for MAGs we recovered from these metagenomes. If you would like to see how we generated these MAGs, and to access their FASTA files, you can visit [this URL](http://merenlab.org/data/2017_Delmont_et_al_HBDs/). You can also generate MAPs for MAGs in this file by changing two variables in the script:
 
 ``` bash
-DATA_FILE="./data-for-TARA.txt"
+if (length(args)==1) {
+    DATA_FILE = args[1]
+} else {
+    # default file if one isn't passed through command line. you can edit this to be yours
+    DATA_FILE="./data-for-TARA.txt"
+}
+
 CIRCLE_SIZE_PREFIX_IN_DATA_FILE="TARA_"
 ```
 
@@ -91,7 +97,13 @@ Metagenome_13  |  34.1   |  -49.89  |  0.761746358          |  0.433873241      
 This file has the same columns as `data.txt`, except for each 'MAG' column there is extra 'color' column, which contains numeric values that will be converted into a color. To run this file, open up `generate-PDFs.R` and edit the following lines to look like:
 
 ``` bash
-DATA_FILE="./data-color-example.txt"
+if (length(args)==1) {
+    DATA_FILE = args[1]
+} else {
+    # default file if one isn't passed through command line. you can edit this to be yours
+    DATA_FILE="./data-color-example.txt"
+}
+
 CIRCLE_SIZE_PREFIX_IN_DATA_FILE="MAG_"
 CIRCLE_COLOR_PREFIX_IN_DATA_FILE="COLOR_"
 ```
