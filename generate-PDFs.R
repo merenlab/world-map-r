@@ -1,4 +1,5 @@
 #!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
 
 suppressMessages(library(ggplot2))
 suppressMessages(library(maps))
@@ -6,8 +7,13 @@ suppressMessages(library(maps))
 #############################################################################
 # Feel free to edit the stuff below
 #############################################################################
+if (length(args)==1) {
+    DATA_FILE = args[1]
+} else {
+    # default file if one isn't passed through command line. you can edit this to be yours
+    DATA_FILE = "./data.txt"
+}
 
-DATA_FILE="./data.txt"
 CIRCLE_SIZE_PREFIX_IN_DATA_FILE="MAG_"
 CIRCLE_COLOR_PREFIX_IN_DATA_FILE=""
 
