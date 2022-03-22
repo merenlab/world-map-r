@@ -175,6 +175,14 @@ df <- read.table(file = DATA_FILE,
                  quote = "",
                  comment.char = '!')
 
+# remove rows with all NAs
+pre_ncol <- ncol(df)
+df <- df[,which(unlist(lapply(df, function(x)!all(is.na(x)))))]
+post_ncol <- ncol(df)
+diff_ncol <- pre_ncol - post_ncol
+cat(sprintf("Removed %s columns containing only NA values\n", diff_ncol))
+
+
 # learn about columns that show distribution of MAGs
 MAGs <- names(df)[startsWith(names(df), CIRCLE_SIZE_PREFIX_IN_DATA_FILE)]
 
