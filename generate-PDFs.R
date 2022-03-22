@@ -8,6 +8,10 @@ suppressMessages(library(ggplot2))
 #############################################################################
 if (length(args)==1) {
     DATA_FILE = args[1]
+    GRADIENT_FILE = NA
+} else if (length(args)==2) {
+    DATA_FILE = args[1]
+    GRADIENT_FILE = args[2]
 } else {
     # default file if one isn't passed through command line. you can edit this to be yours
     DATA_FILE = "./data.txt"
@@ -15,6 +19,7 @@ if (length(args)==1) {
 
 CIRCLE_SIZE_PREFIX_IN_DATA_FILE="MAG_"
 CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE=""
+GRADIENT_COLUMN_NAME = ""
 
 # shape file. if you have a shapefile to work with, describe it here. if you
 # fill in this variable, the code will use your shape file instead of the
@@ -142,6 +147,18 @@ add_mag_abundances <- function(plot_object, df, mag, mag_color=NULL, color_low=N
   return(plot_object)
 }
 
+add_raster_data <- function(plot_object, raster_df){
+  
+  if (GRADIENT_COLUMN_NAME == "") {
+    GRADIENT_COLUMN_NAME = colnames(raster_df)[3]
+  }
+  
+  plot_object <- plot_object + 
+    geom_raster(data=raster_df, aes_string(x="Lon", y="Lat", fill=GRADIENT_COLUMN_NAME, group=NA)) +
+    scale_fill_viridis_c(name=GRADIENT_COLUMN_NAME)
+  return(plot_object)
+}
+
 clean_map <- function(plot_object){
   plot_object <- plot_object +
     xlab(NULL) + ylab(NULL) +
@@ -188,10 +205,16 @@ for (MAG in MAGs){
     world_map <- gen_blank_world_map_simple(df)
   else
     world_map <- gen_blank_world_map_with_shape_file(df)
+  
+  # add underlying gradient
+  if (!is.na(GRADIENT_FILE)) {
+    raster_file <- read.table(GRADIENT_FILE, header=TRUE, sep="\t")
+    world_map <- add_raster_data(world_map, raster_file)
+  }
 
   # add mag abundances on the canvas
   world_map <- add_mag_abundances(world_map, df, MAG, mag_color=color_column, color_low=CIRCLE_COLOR_LOW, color_high=CIRCLE_COLOR_HIGH, alpha=ALPHA)
-
+  
   # clean it up
   world_map <- clean_map(world_map)
 
