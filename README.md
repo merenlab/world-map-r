@@ -164,6 +164,41 @@ By playing with `MARGIN_*` and `*_POINT_SIZE` variables, you can zoom in further
 
 ![https://i.imgur.com/BGrtYBK.png](https://i.imgur.com/BGrtYBK.png)
 
+# Adding an underlying color gradient of data values
+
+Suppose you have additional data that you want to layer beneath the circles, like a heatmap of ocean temperature data. You can do this by putting the information in another tab-delimited file with their corresponding latitude and longitude values, which could look something like this:
+
+|**Lat**|**Lon**|**mean\_surface\_temp**|
+|:--|:--|:--|
+|-78.125|-164.125|-0.40111111111111114|
+|-78.125|-37.375|-1.747842105263158|
+|-78.125|-37.125|-1.8532105263157899|
+|-78.125|-36.875|-1.9131052631578946|
+|-77.875|-178.625|-0.9766666666666668|
+|-77.875|-178.375|-1.0652857142857144|
+|-77.875|-177.375|-1.0434285714285714|
+|-77.875|-176.875|-1.1444285714285716|
+|-77.875|-175.125|-1.2670000000000001|
+
+Columns `Lat` and `Lon` are required, but the other column(s) can be named however you like.
+
+We've included an example file called `woa18_avg_surface_temperature.txt` in the repository. This is surface ocean temperature data (averaged from depths of 0-100m) taken from the 2018 release of the [World Ocean Atlas](https://www.ncei.noaa.gov/products/world-ocean-atlas) dataset (here is the [original data file that we computed averages from](https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA/temperature/csv/A5B7/0.25/woa18_A5B7_t00mn04.csv.gz)).
+
+To add the underlying color gradient, simply pass this file as the **second argument** to the script, like so:
+
+```bash
+./generate-PDFs.R data.txt woa18_avg_surface_temperature.txt
+```
+(Naturally, this requires that you explicitly pass the primary data file as the first argument.)
+
+Here is an example of what this will look like:
+![](gradient-map-example.png)
+
+By default, the script will create the color gradient from the **3rd column of data**, but if you have a different column that you want to use, you can manually change the following variable to have the name of the column you want:
+
+```
+GRADIENT_COLUMN_NAME = ""
+```
 
 # Need more from this?
 
