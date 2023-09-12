@@ -2,6 +2,7 @@
 args = commandArgs(trailingOnly=TRUE)
 
 suppressMessages(library(ggplot2))
+suppressMessages(library(scatterpie))
 
 #############################################################################
 # Feel free to edit the stuff below
@@ -26,6 +27,10 @@ GRADIENT_COLUMN_NAME = ""
 # low resolution default world map (please see the README if you are not sure
 # what is going on and would like to learn more):
 SHAPEFILE=""
+
+# if you want to plot all the values in pie charts within a single map PDF,
+# change this variable to TRUE
+PLOT_AS_PIE_CHARTS=FALSE
 
 # Interface toys down below
 FONT_SIZE <- 2 # set it to 0 to see no labels
@@ -147,6 +152,14 @@ add_mag_abundances <- function(plot_object, df, mag, mag_color=NULL, color_low=N
   return(plot_object)
 }
 
+add_mag_pie_charts <- function(plot_object, df, columns_to_plot){
+  plot_object <- plot_object + geom_scatterpie(data=df,
+                                               aes_string(x="Lon", y="Lat"), 
+                                               cols=columns_to_plot)
+  
+  return(plot_object)
+}
+
 add_raster_data <- function(plot_object, raster_df){
   
   if (GRADIENT_COLUMN_NAME == "") {
@@ -187,27 +200,54 @@ cat(sprintf("Removed %s columns containing only NA values\n", diff_ncol))
 MAGs <- names(df)[startsWith(names(df), CIRCLE_SIZE_PREFIX_IN_DATA_FILE)]
 
 # go through each MAG, and create a single image.
-for (MAG in MAGs){
-  cat(sprintf("Working on %s", MAG))
-
-  # sort out the colors
-  if (CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE == "") {
-    # no color columns. just use static color
-    color_column = NULL
-    cat(sprintf(" ... dynamic color [-]", MAG))
-  } else {
-    # search for corresponding color column for MAG
-    suffix <- gsub(CIRCLE_SIZE_PREFIX_IN_DATA_FILE, "", MAG)
-    color_column <- paste(CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE, suffix, sep="")
-
-    if (!(color_column %in% colnames(df))) {
-      color_column <- NULL
-      cat(sprintf(" ... dynamic color [-]"))
+if (!PLOT_AS_PIE_CHARTS){
+  for (MAG in MAGs){
+    cat(sprintf("Working on %s", MAG))
+  
+    # sort out the colors
+    if (CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE == "") {
+      # no color columns. just use static color
+      color_column = NULL
+      cat(sprintf(" ... dynamic color [-]", MAG))
     } else {
-      cat(sprintf(" ... dynamic color [+]"))
+      # search for corresponding color column for MAG
+      suffix <- gsub(CIRCLE_SIZE_PREFIX_IN_DATA_FILE, "", MAG)
+      color_column <- paste(CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE, suffix, sep="")
+  
+      if (!(color_column %in% colnames(df))) {
+        color_column <- NULL
+        cat(sprintf(" ... dynamic color [-]"))
+      } else {
+        cat(sprintf(" ... dynamic color [+]"))
+      }
     }
+  
+    # get a blank world map
+    if (is.na(SHAPEFILE) || SHAPEFILE == '')
+      world_map <- gen_blank_world_map_simple(df)
+    else
+      world_map <- gen_blank_world_map_with_shape_file(df)
+    
+    # add underlying gradient
+    if (!is.na(GRADIENT_FILE)) {
+      raster_file <- read.table(GRADIENT_FILE, header=TRUE, sep="\t")
+      world_map <- add_raster_data(world_map, raster_file)
+    }
+  
+    # add mag abundances on the canvas
+    world_map <- add_mag_abundances(world_map, df, MAG, mag_color=color_column, color_low=CIRCLE_COLOR_LOW, color_high=CIRCLE_COLOR_HIGH, alpha=ALPHA)
+    
+    # clean it up
+    world_map <- clean_map(world_map)
+  
+    # save it
+    cat(sprintf(" ... generating the figure"))
+    pdf(paste(MAG, '.pdf', sep=''), width=PDF_WIDTH, height=PDF_HEIGHT)
+    print(world_map)
+    dev.off()
+    cat(sprintf(" ... OK\n"))
   }
-
+} else {
   # get a blank world map
   if (is.na(SHAPEFILE) || SHAPEFILE == '')
     world_map <- gen_blank_world_map_simple(df)
@@ -219,16 +259,16 @@ for (MAG in MAGs){
     raster_file <- read.table(GRADIENT_FILE, header=TRUE, sep="\t")
     world_map <- add_raster_data(world_map, raster_file)
   }
-
-  # add mag abundances on the canvas
-  world_map <- add_mag_abundances(world_map, df, MAG, mag_color=color_column, color_low=CIRCLE_COLOR_LOW, color_high=CIRCLE_COLOR_HIGH, alpha=ALPHA)
+  
+  # add the pie charts
+  world_map <- add_mag_pie_charts(world_map, df, MAGs)
   
   # clean it up
   world_map <- clean_map(world_map)
-
+  
   # save it
   cat(sprintf(" ... generating the figure"))
-  pdf(paste(MAG, '.pdf', sep=''), width=PDF_WIDTH, height=PDF_HEIGHT)
+  pdf(paste('ALL_', CIRCLE_SIZE_PREFIX_IN_DATA_FILE, 'PIE_CHARTS.pdf', sep=''), width=PDF_WIDTH, height=PDF_HEIGHT)
   print(world_map)
   dev.off()
   cat(sprintf(" ... OK\n"))
