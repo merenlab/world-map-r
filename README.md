@@ -148,7 +148,7 @@ install.packages('mapproj')
 install.packages('raster')
 ```
 
-If everything went OK so far, you are golden. After this the only thing you need ot do is to download the appropriate shape file for your map. The example above is from Istanbul, so I went to [the download GADM data page](https://gadm.org/download_country_v3.html), found the relevant country from the combo box, which is Turkey in my case, and download the 'shapefile' linked in the results. Unpacking the zip file revealed a new directory, `gadm36_TUR_shp`, in which I found a file called `gadm36_TUR_0.shp`.
+If everything went OK so far, you are golden. After this the only thing you need to do is to download the appropriate shape file for your map. The example above is from Istanbul, so I went to [the download GADM data page](https://gadm.org/download_country_v3.html), found the relevant country from the combo box, which is Turkey in my case, and download the 'shapefile' linked in the results. Unpacking the zip file revealed a new directory, `gadm36_TUR_shp`, in which I found a file called `gadm36_TUR_0.shp`.
 
 The next thing I did was to update the code with the path for this file in the settings section:
 
