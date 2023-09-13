@@ -200,6 +200,22 @@ By default, the script will create the color gradient from the **3rd column of d
 GRADIENT_COLUMN_NAME = ""
 ```
 
+# Plotting values in pie charts on a single map
+
+Instead of making individual maps each showing the data for a single MAG, you may want to plot all the data in a single map. We can do this by plotting pie charts rather than circles, in which each MAG (column of your data file) gets a different color in the pie charts and the size of its slice corresponds to the relative value of its data in a given sample. For instance, if your data columns contain coverage values, then the pie charts will show relative coverage of the MAGs within each sample.
+
+If you want to do this, you should modify the script so that this variable is set to `TRUE`:
+
+```r
+PLOT_AS_PIE_CHARTS=TRUE
+``` 
+
+Then you can run the program as usual. Here is an example of what the resulting map looks like using the example file `data.txt`:
+
+![https://imgur.com/a/rYYM05a](https://imgur.com/a/rYYM05a)
+
+In this mode, we utilize the [`scatterpie` library](https://github.com/GuangchuangYu/scatterpie) to make the plots. You will need to install this library for the script to work :) 
+
 # Need more from this?
 
 Of course you do :) Feel free to send a message!
