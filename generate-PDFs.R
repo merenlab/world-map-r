@@ -16,6 +16,7 @@ if (length(args)==1) {
 } else {
     # default file if one isn't passed through command line. you can edit this to be yours
     DATA_FILE = "./data.txt"
+    GRADIENT_FILE = NA
 }
 
 CIRCLE_SIZE_PREFIX_IN_DATA_FILE="MAG_"
