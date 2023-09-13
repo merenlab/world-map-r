@@ -220,7 +220,7 @@ PLOT_AS_PIE_CHARTS=TRUE
 
 Then you can run the program as usual. Here is an example of what the resulting map looks like using the example file `data.txt`:
 
-![https://imgur.com/a/rYYM05a](https://imgur.com/a/rYYM05a)
+![https://i.imgur.com/jXJ3fvz.png](https://i.imgur.com/jXJ3fvz.png)
 
 In this mode, we utilize the [`scatterpie` library](https://github.com/GuangchuangYu/scatterpie) to make the plots. You will need to install this library for the script to work :) 
 
