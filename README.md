@@ -1,10 +1,18 @@
 A simple script to display stuff on a world map with R and ggplot
 
+# Dependencies
+
+This script requires `R` to be installed on your system with the following libraries:
+
+- `ggplot2`
+- `maps`
+- `scatterpie` (only necessary if you are using the pie chart functionality. If you are not and don't want to install this package, feel free to comment out the line loading this library at the top of the script.)
+
 # Usage
 
 This is an embarrassingly simple and largely generalized version of an R script that we often use in our lab to visualize the relative abundance and distribution of our marine metagenome-assembled genomes on the map.
 
-Given that it could be useful to others, we decided to put it in a repository. You can generate a copy of it, and run it on the mock data this way, assuming that you have `R` installed on your system with `R` libraries `ggplot` and `maps`:
+Given that it could be useful to others, we decided to put it in a repository. You can generate a copy of it, and run it on the mock data this way:
 
 ``` bash
 git clone https://github.com/merenlab/world-map-r.git
