@@ -32,6 +32,13 @@ SHAPEFILE=""
 # if you want to plot all the values in pie charts within a single map PDF,
 # change this variable to TRUE
 PLOT_AS_PIE_CHARTS=FALSE
+# if you want the pie chart radius to be scaled according to max value per row, 
+# change this variable to TRUE
+ADJUST_PIE_RADIUS=FALSE
+
+# size of sample points in pie chart mode
+# set this so that the points are small enough to not obscure the pie charts
+POINT_SIZE = 1
 
 # Interface toys down below
 FONT_SIZE <- 2 # set it to 0 to see no labels
