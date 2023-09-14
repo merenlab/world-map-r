@@ -249,6 +249,11 @@ if (!PLOT_AS_PIE_CHARTS){
     cat(sprintf(" ... OK\n"))
   }
 } else {
+  # convert any remaining NAs to 0s
+  num_na = sum(is.na(df))
+  cat(sprintf("There are %s NAs in the data. These will be replaced by 0s.\n", num_na))
+  df[is.na(df)] <- 0.0
+  
   # get a blank world map
   if (is.na(SHAPEFILE) || SHAPEFILE == '')
     world_map <- gen_blank_world_map_simple(df)
