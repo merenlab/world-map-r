@@ -57,6 +57,7 @@ MARGIN_MIN_LAT <- -5
 MARGIN_MAX_LAT <- 5
 MARGIN_MIN_LON <- -5
 MARGIN_MAX_LON <- 5
+MARGIN_LEGEND <- 1
 
 PDF_WIDTH <- 12
 PDF_HEIGHT <- 5.5
@@ -154,9 +155,15 @@ add_mag_abundances <- function(plot_object, df, mag, mag_color=NULL, color_low=N
 }
 
 add_mag_pie_charts <- function(plot_object, df, columns_to_plot){
+  df$radius = apply(df[,4:ncol(df)], 1, max)
+  legend_lat <- min(df$Lat) + MARGIN_MIN_LAT + MARGIN_LEGEND
+  legend_lon <- min(df$Lon) + MARGIN_MIN_LON + MARGIN_LEGEND
+  
   plot_object <- plot_object + geom_scatterpie(data=df,
-                                               aes_string(x="Lon", y="Lat"), 
-                                               cols=columns_to_plot)
+                                               aes(x=Lon, y=Lat, r=radius), 
+                                               cols=columns_to_plot,
+                                               alpha=0.8) +
+                               geom_scatterpie_legend(df$radius, x=legend_lon , y=legend_lat)
   
   return(plot_object)
 }
