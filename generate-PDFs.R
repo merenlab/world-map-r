@@ -162,9 +162,10 @@ add_mag_abundances <- function(plot_object, df, mag, mag_color=NULL, color_low=N
 }
 
 add_mag_pie_charts <- function(plot_object, df, columns_to_plot){
-  df$radius = apply(df[,4:ncol(df)], 1, max)
-  legend_lat <- min(df$Lat) + MARGIN_MIN_LAT + MARGIN_LEGEND
-  legend_lon <- min(df$Lon) + MARGIN_MIN_LON + MARGIN_LEGEND
+  # add a dot in the center of each sample
+  plot_object <- plot_object + geom_point(data=df,
+                                          aes(x=Lon, y=Lat, group=NA),
+                                          size = POINT_SIZE)
   
   plot_object <- plot_object + geom_scatterpie(data=df,
                                                aes(x=Lon, y=Lat, r=radius), 
