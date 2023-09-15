@@ -35,6 +35,8 @@ PLOT_AS_PIE_CHARTS=FALSE
 # if you want the pie chart radius to be scaled according to max value per row, 
 # change this variable to TRUE
 ADJUST_PIE_RADIUS=FALSE
+# if you want to set an exact pie chart radius, do it below
+EXACT_PIE_RADIUS = NA
 
 # size of sample points in pie chart mode
 # set this so that the points are small enough to not obscure the pie charts
@@ -194,6 +196,11 @@ add_mag_pie_charts <- function(plot_object, df, columns_to_plot){
                                                  cols=columns_to_plot,
                                                  alpha=0.8) +
                                  geom_scatterpie_legend(df$radius, x=legend_lon , y=legend_lat)
+  } else if (!is.na(EXACT_PIE_RADIUS)) {
+    plot_object <- plot_object + geom_scatterpie(data=df,
+                                                 aes(x=Lon, y=Lat, r=EXACT_PIE_RADIUS), 
+                                                 cols=columns_to_plot,
+                                                 alpha=0.8)
   } else {
     plot_object <- plot_object + geom_scatterpie(data=df,
                                                  aes(x=Lon, y=Lat), 
