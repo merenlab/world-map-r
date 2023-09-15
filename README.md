@@ -62,6 +62,13 @@ The script will resize the area of interest depending on the sample locations. F
 
 ![https://i.imgur.com/W3IcrSF.png](https://i.imgur.com/W3IcrSF.png)
 
+If you _don't want this resizing behavior_ -- for instance, you are generating multiple plots and you want them to have comparable dimensions -- you can plot the full world map by setting this parameter in the script:
+
+```r
+USE_FULL_MAP <- TRUE
+```
+
+Note that this can have some implications on the sizing of the points, especially for Pie Chart Mode. See discussion in the Pie Chart Mode section below.
 
 ---
 
@@ -208,7 +215,7 @@ By default, the script will create the color gradient from the **3rd column of d
 GRADIENT_COLUMN_NAME = ""
 ```
 
-# Plotting values in pie charts on a single map
+# Plotting values in pie charts on a single map with 'PIE CHART MODE'
 
 Instead of making individual maps each showing the data for a single MAG, you may want to plot all the data in a single map. We can do this by plotting pie charts rather than circles, in which each MAG (column of your data file) gets a different color in the pie charts and the size of its slice corresponds to the relative value of its data in a given sample. For instance, if your data columns contain coverage values, then the pie charts will show relative coverage of the MAGs within each sample.
 
@@ -223,6 +230,54 @@ Then you can run the program as usual. Here is an example of what the resulting 
 ![https://i.imgur.com/jXJ3fvz.png](https://i.imgur.com/jXJ3fvz.png)
 
 In this mode, we utilize the [`scatterpie` library](https://github.com/GuangchuangYu/scatterpie) to make the plots. You will need to install this library for the script to work :) 
+
+## A note on overlapping pie charts
+
+Pie charts that overlap on the resulting map may appear to be merged together. Our solution to this problem was to add an underlying point on the map for each sample, so that the figure can be modified (for instance, with Inkscape) to manually move the pie charts around but still have a reference point to match them to their original location.
+
+You can change the size of the sample points by modifying this variable:
+
+```r
+POINT_SIZE = 1
+```
+
+The other benefit of these sample points is that they can show you which samples have 0.0 or missing data for all the genomes (since there will be no pie chart in that case, but the sample point will still be plotted).
+
+However, note that in some cases the points may be too large and will obscure the pie charts. For instance, if you plot the full world map (with `USE_FULL_MAP <- TRUE`) with only a few samples, the pie charts will be scaled very small and the points will completely cover them up. You may not even notice this happening if you haven't plotted the smaller set of coordinates corresponding to your sample set first, so we always recommend generating initial plots with the resizing enabled. If you notice this happening, you can fix it by setting the pie chart size as described in the next subsection.
+
+## Setting the pie chart size
+
+You can make your pie charts bigger by setting their exact radius value, ie:
+
+```r
+EXACT_PIE_RADIUS = 5
+```
+
+This is especially useful when plotting the full map with only a small set of samples, since the default pie chart size is computed based on the set of coordinates in your sample data, not according to the full map size.
+
+## Re-sizing the pie charts according to (maximum) data value per sample
+
+Sometimes, we want the size of each pie chart to reflect the relative value of the genome data in a given sample. For instance, you may want the pie charts to be bigger if the absolute coverage in a sample is bigger. You can turn this behavior on by setting:
+
+```r
+ADJUST_PIE_RADIUS=TRUE
+```
+
+Then, the radius of each pie chart will be set by the maximum data value in a given row (sample), and the plot will get a legend showing which pie chart size corresponds to which max value. For some data types, you may need to change the scaling of the radius value, which you can do by modifying this part of the code:
+
+```r
+if (ADJUST_PIE_RADIUS){
+    df$radius = apply(df[,4:ncol(df)], 1, max)  # SCALE THE RADIUS HERE
+    legend_lat <- min(df$Lat) + MARGIN_MIN_LAT + MARGIN_LEGEND
+    legend_lon <- min(df$Lon) + MARGIN_MIN_LON + MARGIN_LEGEND
+    
+    plot_object <- plot_object + geom_scatterpie(data=df,
+                                                 aes(x=Lon, y=Lat, r=radius), 
+                                                 cols=columns_to_plot,
+                                                 alpha=0.8) +
+                                 geom_scatterpie_legend(df$radius, x=legend_lon , y=legend_lat) # YOU MAY ALSO NEED TO CHANGE THE LEGEND LABELS HERE
+  } (....)
+```
 
 # Need more from this?
 
