@@ -66,6 +66,9 @@ MARGIN_MIN_LON <- -5
 MARGIN_MAX_LON <- 5
 MARGIN_LEGEND <- 1
 
+# set this to TRUE if you want the plot to show the full map, regardless of min/max coordinates of samples
+USE_FULL_MAP <- FALSE
+
 PDF_WIDTH <- 12
 PDF_HEIGHT <- 5.5
 
@@ -80,6 +83,13 @@ gen_blank_world_map_simple <- function(df) {
   max_lat <- max(df$Lat) + MARGIN_MAX_LAT
   min_lon <- min(df$Lon) + MARGIN_MIN_LON
   max_lon <- max(df$Lon) + MARGIN_MAX_LON
+  
+  if(USE_FULL_MAP){
+    min_lat <- min(world_map$lat)
+    max_lat <- max(world_map$lat)
+    min_lon <- min(world_map$long)
+    max_lon <- max(world_map$long)
+  }
 
   p <- ggplot(data=world_map,aes(x=long, y=lat, group=group))
   p <- p + geom_polygon(fill = '#777777')
@@ -99,6 +109,13 @@ gen_blank_world_map_with_shape_file <- function(df) {
   max_lat <- max(df$Lat) + MARGIN_MAX_LAT
   min_lon <- min(df$Lon) + MARGIN_MIN_LON
   max_lon <- max(df$Lon) + MARGIN_MAX_LON
+  
+  if(USE_FULL_MAP){
+    min_lat <- min(world_map$lat)
+    max_lat <- max(world_map$lat)
+    min_lon <- min(world_map$long)
+    max_lon <- max(world_map$long)
+  }
 
   p <- ggplot()
   p <- ggplot(data=world_map,aes(x=long, y=lat, group=group))
