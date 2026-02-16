@@ -20,7 +20,7 @@ if (length(args)==1) {
 }
 
 CIRCLE_SIZE_PREFIX_IN_DATA_FILE="MAG_"
-CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE=""
+CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE="COLOR_"
 GRADIENT_COLUMN_NAME = ""
 
 # shape file. if you have a shapefile to work with, describe it here. if you
