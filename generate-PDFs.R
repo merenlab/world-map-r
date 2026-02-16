@@ -52,6 +52,11 @@ FONT_COLOR="black"
 CIRCLE_COLOR_LOW="red"
 CIRCLE_COLOR_HIGH="yellow"
 
+# If your COLOR columns contain literal color values (e.g., "#FF0000", "red"),
+# set this to TRUE. When FALSE, color values are treated as numeric and mapped
+# to the gradient defined by CIRCLE_COLOR_LOW and CIRCLE_COLOR_HIGH.
+USE_LITERAL_COLORS=TRUE
+
 # translucency of circles. 1 is opaque, 0 is transparent
 ALPHA <- 0.90
 
@@ -130,21 +135,33 @@ gen_blank_world_map_with_shape_file <- function(df) {
 
 add_mag_abundances <- function(plot_object, df, mag, mag_color=NULL, color_low=NULL, color_high=NULL, alpha=0.2, labels = TRUE){
   if (!is.null(mag_color)) {
-    plot_object <- plot_object + geom_point(data = df,
-                                            aes_string(x="Lon", y="Lat",
-                                                       group=mag,
-                                                       size=mag,
-                                                       color=mag_color),
-                                            stroke = 0,
-                                            alpha=ALPHA)
+    if (USE_LITERAL_COLORS) {
+      plot_object <- plot_object + geom_point(data = df,
+                                              aes(x=Lon, y=Lat,
+                                                  group=.data[[mag]],
+                                                  size=.data[[mag]],
+                                                  color=.data[[mag_color]]),
+                                              stroke = 0,
+                                              alpha=ALPHA)
 
-    plot_object <- plot_object + scale_colour_gradient(low = color_low, high = color_high)
+      plot_object <- plot_object + scale_colour_identity()
+    } else {
+      plot_object <- plot_object + geom_point(data = df,
+                                              aes(x=Lon, y=Lat,
+                                                  group=.data[[mag]],
+                                                  size=.data[[mag]],
+                                                  color=.data[[mag_color]]),
+                                              stroke = 0,
+                                              alpha=ALPHA)
+
+      plot_object <- plot_object + scale_colour_gradient(low = color_low, high = color_high)
+    }
 
   } else {
     plot_object <- plot_object + geom_point(data = df,
-                                            aes_string(x="Lon", y="Lat",
-                                                       group=mag,
-                                                       size=mag),
+                                            aes(x=Lon, y=Lat,
+                                                group=.data[[mag]],
+                                                size=.data[[mag]]),
                                             color=CIRCLE_COLOR_LOW,
                                             stroke = 0,
                                             alpha=ALPHA)
@@ -159,9 +176,9 @@ add_mag_abundances <- function(plot_object, df, mag, mag_color=NULL, color_low=N
   plot_object <- plot_object + geom_point(data = df,
                                           shape = 21,
                                           colour = "black",
-                                          aes_string(x="Lon", y="Lat",
-                                                     group=mag,
-                                                     size=mag),
+                                          aes(x=Lon, y=Lat,
+                                              group=.data[[mag]],
+                                              size=.data[[mag]]),
                                           stroke = CIRCLE_BORDER_WIDTH,
                                           alpha=alpha_for_border)
 
@@ -218,7 +235,7 @@ add_raster_data <- function(plot_object, raster_df){
   }
   
   plot_object <- plot_object + 
-    geom_raster(data=raster_df, aes_string(x="Lon", y="Lat", fill=GRADIENT_COLUMN_NAME, group=NA)) +
+    geom_raster(data=raster_df, aes(x=Lon, y=Lat, fill=.data[[GRADIENT_COLUMN_NAME]], group=NA)) +
     scale_fill_viridis_c(name=GRADIENT_COLUMN_NAME)
   return(plot_object)
 }
