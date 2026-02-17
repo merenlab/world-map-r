@@ -3,6 +3,7 @@ args = commandArgs(trailingOnly=TRUE)
 
 suppressMessages(library(ggplot2))
 suppressMessages(library(scatterpie))
+suppressMessages(library(ggrepel))
 
 #############################################################################
 # Feel free to edit the stuff below
@@ -45,6 +46,12 @@ POINT_SIZE = 1
 # Interface toys down below
 FONT_SIZE <- 2 # set it to 0 to see no labels
 FONT_COLOR="black"
+
+# if you want labels to automatically spread out to avoid overlapping,
+# set this to TRUE (requires the ggrepel package)
+SPREAD_LABELS=FALSE
+SPREAD_LABELS_LINE_COLOR="black"
+SPREAD_LABELS_LINE_THICKNESS=0.1
 
 # If you want each circle on the map to be colored according to a color gradient,
 # provide low- and high-value colors. Otherwise, set CIRCLE_COLOR_LOW to your
@@ -182,14 +189,43 @@ add_mag_abundances <- function(plot_object, df, mag, mag_color=NULL, color_low=N
                                           stroke = CIRCLE_BORDER_WIDTH,
                                           alpha=alpha_for_border)
 
-  plot_object <- plot_object + geom_text(data = df,
-                                         aes(x=Lon, y=Lat,
-                                             group='text',
-                                             label=samples),
-                                         size=FONT_SIZE,
-                                         color=FONT_COLOR,
-                                         vjust=1,
-                                         nudge_y=-1)
+  if (SPREAD_LABELS) {
+    # compute display sizes to match scale_size so connector lines
+    # start exactly at the edge of each circle
+    mag_values <- df[[mag]]
+    mag_range <- range(mag_values, na.rm = TRUE)
+    if (mag_range[1] == mag_range[2]) {
+      display_sizes <- rep(mean(c(MIN_POINT_SIZE, MAX_POINT_SIZE)), nrow(df))
+    } else {
+      # scale_size maps linearly in area (sqrt transformation on size),
+      # so we replicate that here: rescale to 0-1, sqrt, then map to size range
+      rescaled <- (mag_values - mag_range[1]) / (mag_range[2] - mag_range[1])
+      display_sizes <- MIN_POINT_SIZE + sqrt(rescaled) * (MAX_POINT_SIZE - MIN_POINT_SIZE)
+    }
+
+    plot_object <- plot_object + geom_text_repel(data = df,
+                                           aes(x=Lon, y=Lat,
+                                               group='text',
+                                               label=samples),
+                                           size=FONT_SIZE,
+                                           color=FONT_COLOR,
+                                           min.segment.length=0,
+                                           segment.color=SPREAD_LABELS_LINE_COLOR,
+                                           segment.size=SPREAD_LABELS_LINE_THICKNESS,
+                                           box.padding=0.5,
+                                           point.padding=0,
+                                           point.size=display_sizes,
+                                           max.overlaps=Inf)
+  } else {
+    plot_object <- plot_object + geom_text(data = df,
+                                           aes(x=Lon, y=Lat,
+                                               group='text',
+                                               label=samples),
+                                           size=FONT_SIZE,
+                                           color=FONT_COLOR,
+                                           vjust=1,
+                                           nudge_y=-1)
+  }
 
   plot_object <- plot_object + scale_size(range=c(MIN_POINT_SIZE,
                                                   MAX_POINT_SIZE))
