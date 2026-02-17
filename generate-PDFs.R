@@ -32,7 +32,7 @@ SHAPEFILE=""
 # if you want to plot all the values in pie charts within a single map PDF,
 # change this variable to TRUE
 PLOT_AS_PIE_CHARTS=FALSE
-# if you want the pie chart radius to be scaled according to max value per row, 
+# if you want the pie chart radius to be scaled according to max value per row,
 # change this variable to TRUE
 ADJUST_PIE_RADIUS=FALSE
 # if you want to set an exact pie chart radius, do it below
@@ -90,7 +90,7 @@ gen_blank_world_map_simple <- function(df) {
   max_lat <- max(df$Lat) + MARGIN_MAX_LAT
   min_lon <- min(df$Lon) + MARGIN_MIN_LON
   max_lon <- max(df$Lon) + MARGIN_MAX_LON
-  
+
   if(USE_FULL_MAP){
     min_lat <- min(world_map$lat)
     max_lat <- max(world_map$lat)
@@ -116,7 +116,7 @@ gen_blank_world_map_with_shape_file <- function(df) {
   max_lat <- max(df$Lat) + MARGIN_MAX_LAT
   min_lon <- min(df$Lon) + MARGIN_MIN_LON
   max_lon <- max(df$Lon) + MARGIN_MAX_LON
-  
+
   if(USE_FULL_MAP){
     min_lat <- min(world_map$lat)
     max_lat <- max(world_map$lat)
@@ -202,39 +202,39 @@ add_mag_pie_charts <- function(plot_object, df, columns_to_plot){
   plot_object <- plot_object + geom_point(data=df,
                                           aes(x=Lon, y=Lat, group=NA),
                                           size = POINT_SIZE)
-  
+
   if (ADJUST_PIE_RADIUS){
     df$radius = apply(df[,4:ncol(df)], 1, max)
     legend_lat <- min(df$Lat) + MARGIN_MIN_LAT + MARGIN_LEGEND
     legend_lon <- min(df$Lon) + MARGIN_MIN_LON + MARGIN_LEGEND
-    
+
     plot_object <- plot_object + geom_scatterpie(data=df,
-                                                 aes(x=Lon, y=Lat, r=radius), 
+                                                 aes(x=Lon, y=Lat, r=radius),
                                                  cols=columns_to_plot,
                                                  alpha=0.8) +
                                  geom_scatterpie_legend(df$radius, x=legend_lon , y=legend_lat)
   } else if (!is.na(EXACT_PIE_RADIUS)) {
     plot_object <- plot_object + geom_scatterpie(data=df,
-                                                 aes(x=Lon, y=Lat, r=EXACT_PIE_RADIUS), 
+                                                 aes(x=Lon, y=Lat, r=EXACT_PIE_RADIUS),
                                                  cols=columns_to_plot,
                                                  alpha=0.8)
   } else {
     plot_object <- plot_object + geom_scatterpie(data=df,
-                                                 aes(x=Lon, y=Lat), 
+                                                 aes(x=Lon, y=Lat),
                                                  cols=columns_to_plot,
                                                  alpha=0.8)
   }
-  
+
   return(plot_object)
 }
 
 add_raster_data <- function(plot_object, raster_df){
-  
+
   if (GRADIENT_COLUMN_NAME == "") {
     GRADIENT_COLUMN_NAME = colnames(raster_df)[3]
   }
-  
-  plot_object <- plot_object + 
+
+  plot_object <- plot_object +
     geom_raster(data=raster_df, aes(x=Lon, y=Lat, fill=.data[[GRADIENT_COLUMN_NAME]], group=NA)) +
     scale_fill_viridis_c(name=GRADIENT_COLUMN_NAME)
   return(plot_object)
@@ -271,7 +271,7 @@ MAGs <- names(df)[startsWith(names(df), CIRCLE_SIZE_PREFIX_IN_DATA_FILE)]
 if (!PLOT_AS_PIE_CHARTS){
   for (MAG in MAGs){
     cat(sprintf("Working on %s", MAG))
-  
+
     # sort out the colors
     if (CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE == "") {
       # no color columns. just use static color
@@ -281,7 +281,7 @@ if (!PLOT_AS_PIE_CHARTS){
       # search for corresponding color column for MAG
       suffix <- gsub(CIRCLE_SIZE_PREFIX_IN_DATA_FILE, "", MAG)
       color_column <- paste(CIRCLE_DYNAMIC_COLOR_PREFIX_IN_DATA_FILE, suffix, sep="")
-  
+
       if (!(color_column %in% colnames(df))) {
         color_column <- NULL
         cat(sprintf(" ... dynamic color [-]"))
@@ -289,25 +289,25 @@ if (!PLOT_AS_PIE_CHARTS){
         cat(sprintf(" ... dynamic color [+]"))
       }
     }
-  
+
     # get a blank world map
     if (is.na(SHAPEFILE) || SHAPEFILE == '')
       world_map <- gen_blank_world_map_simple(df)
     else
       world_map <- gen_blank_world_map_with_shape_file(df)
-    
+
     # add underlying gradient
     if (!is.na(GRADIENT_FILE)) {
       raster_file <- read.table(GRADIENT_FILE, header=TRUE, sep="\t")
       world_map <- add_raster_data(world_map, raster_file)
     }
-  
+
     # add mag abundances on the canvas
     world_map <- add_mag_abundances(world_map, df, MAG, mag_color=color_column, color_low=CIRCLE_COLOR_LOW, color_high=CIRCLE_COLOR_HIGH, alpha=ALPHA)
-    
+
     # clean it up
     world_map <- clean_map(world_map)
-  
+
     # save it
     cat(sprintf(" ... generating the figure"))
     pdf(paste(MAG, '.pdf', sep=''), width=PDF_WIDTH, height=PDF_HEIGHT)
@@ -320,25 +320,25 @@ if (!PLOT_AS_PIE_CHARTS){
   num_na = sum(is.na(df))
   cat(sprintf("There are %s NAs in the data. These will be replaced by 0s.\n", num_na))
   df[is.na(df)] <- 0.0
-  
+
   # get a blank world map
   if (is.na(SHAPEFILE) || SHAPEFILE == '')
     world_map <- gen_blank_world_map_simple(df)
   else
     world_map <- gen_blank_world_map_with_shape_file(df)
-  
+
   # add underlying gradient
   if (!is.na(GRADIENT_FILE)) {
     raster_file <- read.table(GRADIENT_FILE, header=TRUE, sep="\t")
     world_map <- add_raster_data(world_map, raster_file)
   }
-  
+
   # add the pie charts
   world_map <- add_mag_pie_charts(world_map, df, MAGs)
-  
+
   # clean it up
   world_map <- clean_map(world_map)
-  
+
   # save it
   cat(sprintf(" ... generating the figure"))
   pdf(paste('ALL_', CIRCLE_SIZE_PREFIX_IN_DATA_FILE, 'PIE_CHARTS.pdf', sep=''), width=PDF_WIDTH, height=PDF_HEIGHT)
